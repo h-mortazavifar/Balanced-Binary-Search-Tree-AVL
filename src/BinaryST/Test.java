@@ -18,7 +18,6 @@ public class Test {
         avl.setRoot(avl.insert(avl.getRoot(), 7));
         avl.setRoot(avl.insert(avl.getRoot(), 6));
         System.out.println(avl);
-
         System.out.print("Inorder: ");
         avl.inOrder(avl.getRoot());
         System.out.println();
@@ -31,22 +30,9 @@ public class Test {
         System.out.println("smallest node is: " + avl.smallest());
         System.out.println("largest node is: " + avl.largest());
 
-//        avl.delete(25);
-//        System.out.println();
-//        System.out.println("Inorder: ");
-//        avl.inOrder(avl.getRoot());
-//        System.out.println(avl);
-//        avl.delete(20);
-//        System.out.println();
-//        System.out.println("Inorder: ");
-//        avl.inOrder(avl.getRoot());
-//        System.out.println(avl);
         avl.delete(10);
         System.out.println(avl);
-//        System.out.println("Inorder: ");
-//        avl.inOrder(avl.getRoot());
-//        avl.delete(5);
-//        System.out.println(avl);
-
+        avl.delete(7);
+        System.out.println(avl);
     }
 }

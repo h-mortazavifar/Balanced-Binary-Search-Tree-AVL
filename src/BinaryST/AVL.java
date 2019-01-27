@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 class AVL {
     private Node root;
-    ArrayList<Node> parents = new ArrayList<>();
 
     private Integer height(Node node) {
         return node == null ? 0 : node.getHeight();
@@ -126,8 +125,10 @@ class AVL {
     }
 
     void delete(Integer data) {
+        ArrayList<Node> parents = new ArrayList<>();
         Node nodeDel = this.root;
         Node parent = this.root;
+        Node imBalance = null;
         Integer balanceFactor;
         boolean isLeftChild = false;
         if (nodeDel == null) {
@@ -144,22 +145,19 @@ class AVL {
             }
             parents.add(nodeDel);
         }
-        balanceFactor = getBalance(parent);
-        System.out.println("\nthe starting balanceFactor: " + balanceFactor + " parent: "
-                + parent.getData() + " nodeDel: " + nodeDel.getData());
 
-//        if (nodeDel == null) {
-//            return nodeDel;
+        if (nodeDel == null) {
+            return;
 //        delete a leaf node
-//        } else
-        if (nodeDel.getLeftChild() == null && nodeDel.getRightChild() == null) {
+        } else if (nodeDel.getLeftChild() == null && nodeDel.getRightChild() == null) {
             if (nodeDel == root) {
                 root = null;
             } else {
-                if (isLeftChild)
+                if (isLeftChild) {
                     parent.setLeftChild(null);
-                else
+                } else {
                     parent.setRightChild(null);
+                }
             }
         }
 //            deleting a node with degree of one
@@ -183,29 +181,35 @@ class AVL {
         //            deleting a node with degree of two
         else {
             Integer minimumData = minimumData(nodeDel.getRightChild());
-            System.out.println("deleeeeeeee" + nodeDel.getData());
+//            System.out.println("toDeleteOne" + nodeDel.getData());
             delete(minimumData);
-            System.out.println("deleeeeeeee" + nodeDel.getData());
+//            System.out.println("toDelete" + nodeDel.getData());
             nodeDel.setData(minimumData);
         }
-        System.out.println("parent height at first: " + parent.getHeight());
+//        System.out.println("parent height at first: " + parent.getHeight() +
+//                " Left " + parent.getLeftChild().getData() +
+//                " Right " + parent.getRightChild().getData());
         parent.setHeight(maximum(height(parent.getLeftChild()), height(parent.getRightChild())));
         balanceFactor = getBalance(parent);
-        System.out.println("\nnew balanceFactor: " + balanceFactor + " and parent is " + parent.getData());
-        inOrder(parent);
-        if (balanceFactor <= 1 && balanceFactor >= -1 && parent != root) {
+//        System.out.println("\nthe starting balanceFactor: " + balanceFactor + " parent: "
+//                + parent.getData() + " nodeDel: " + nodeDel.getData());
+        if (balanceFactor <= 1 && balanceFactor >= -1) {
             for (int i = parents.size() - 1; i >= 0; i--) {
-                parent = parents.get(i);
-                balanceFactor = getBalance(parent);
-                if (balanceFactor > 1 || balanceFactor < -1)
+                imBalance = parents.get(i);
+                balanceFactor = getBalance(imBalance);
+                System.out.println("heyhey " + imBalance.getData() + " size:" + parents.size());
+                if (balanceFactor > 1 || balanceFactor < -1) {
+                    if (imBalance.getData() > parent.getData()) {
+                        parent.setRightChild(rotateCase(imBalance, data, balanceFactor));
+                    } else
+                        parent.setLeftChild(rotateCase(imBalance, data, balanceFactor));
                     break;
+                }
             }
         }
-        rotateCase(parent, data, balanceFactor);
-        System.out.println();
-        inOrder(parent);
-        balanceFactor = getBalance(parent);
-        System.out.println("\nafter rebalanced:" + balanceFactor);
+//        System.out.println("\nnew balanceFactor: " + balanceFactor + " and parent is "
+//                + parent.getData() + " Left " + parent.getLeftChild().getData() +
+//                " Right " + parent.getRightChild().getData());
     }
 
     void preOrder(Node node) {
