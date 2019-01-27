@@ -128,13 +128,13 @@ class AVL {
         ArrayList<Node> parents = new ArrayList<>();
         Node nodeDel = this.root;
         Node parent = this.root;
-        Node imBalance = null;
+        Node imBalance;
         Integer balanceFactor;
         boolean isLeftChild = false;
         if (nodeDel == null) {
             return;
         }
-        while (nodeDel != null && nodeDel.getData() != data) {
+        while (nodeDel != null && !nodeDel.getData().equals(data)) {
             parent = nodeDel;
             if (data < nodeDel.getData()) {
                 nodeDel = nodeDel.getLeftChild();
@@ -181,23 +181,15 @@ class AVL {
         //            deleting a node with degree of two
         else {
             Integer minimumData = minimumData(nodeDel.getRightChild());
-//            System.out.println("toDeleteOne" + nodeDel.getData());
             delete(minimumData);
-//            System.out.println("toDelete" + nodeDel.getData());
             nodeDel.setData(minimumData);
         }
-//        System.out.println("parent height at first: " + parent.getHeight() +
-//                " Left " + parent.getLeftChild().getData() +
-//                " Right " + parent.getRightChild().getData());
         parent.setHeight(maximum(height(parent.getLeftChild()), height(parent.getRightChild())));
         balanceFactor = getBalance(parent);
-//        System.out.println("\nthe starting balanceFactor: " + balanceFactor + " parent: "
-//                + parent.getData() + " nodeDel: " + nodeDel.getData());
         if (balanceFactor <= 1 && balanceFactor >= -1) {
             for (int i = parents.size() - 1; i >= 0; i--) {
                 imBalance = parents.get(i);
                 balanceFactor = getBalance(imBalance);
-                System.out.println("heyhey " + imBalance.getData() + " size:" + parents.size());
                 if (balanceFactor > 1 || balanceFactor < -1) {
                     if (imBalance.getData() > parent.getData()) {
                         parent.setRightChild(rotateCase(imBalance, data, balanceFactor));
@@ -207,9 +199,6 @@ class AVL {
                 }
             }
         }
-//        System.out.println("\nnew balanceFactor: " + balanceFactor + " and parent is "
-//                + parent.getData() + " Left " + parent.getLeftChild().getData() +
-//                " Right " + parent.getRightChild().getData());
     }
 
     void preOrder(Node node) {
