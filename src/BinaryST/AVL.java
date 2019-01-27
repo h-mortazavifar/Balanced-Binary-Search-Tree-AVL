@@ -1,7 +1,10 @@
 package BinaryST;
 
+import java.util.ArrayList;
+
 class AVL {
     private Node root;
+    ArrayList<Node> parents = new ArrayList<>();
 
     private Integer height(Node node) {
         return node == null ? 0 : node.getHeight();
@@ -9,6 +12,20 @@ class AVL {
 
     private Integer maximum(Integer dataA, Integer dataB) {
         return dataA > dataB ? dataA : dataB;
+    }
+
+    public Integer largest() {
+        if (root != null) {
+            return root.largest();
+        }
+        return null;
+    }
+
+    public Integer smallest() {
+        if (root != null) {
+            return root.smallest();
+        }
+        return null;
     }
 
     Node getRoot() {
@@ -31,7 +48,6 @@ class AVL {
     private Node rightRotate(Node a) {
         Node b = a.getLeftChild();
         Node n3 = b.getRightChild();
-        Node parent = a.getParent();
         b.setRightChild(a);
         a.setLeftChild(n3);
         setHeights(a, b);
@@ -50,7 +66,6 @@ class AVL {
     private Node leftRotate(Node a) {
         Node b = a.getRightChild();
         Node n2 = b.getLeftChild();
-        Node parent = a.getParent();
         b.setLeftChild(a);
         a.setRightChild(n2);
         setHeights(a, b);
@@ -110,13 +125,13 @@ class AVL {
         return rotateCase(node, data, balance);
     }
 
-    Node delete(Integer data) {
+    void delete(Integer data) {
         Node nodeDel = this.root;
         Node parent = this.root;
-        Integer balance;
+        Integer balanceFactor;
         boolean isLeftChild = false;
         if (nodeDel == null) {
-            return null;
+            return;
         }
         while (nodeDel != null && nodeDel.getData() != data) {
             parent = nodeDel;
@@ -127,14 +142,17 @@ class AVL {
                 nodeDel = nodeDel.getRightChild();
                 isLeftChild = false;
             }
+            parents.add(nodeDel);
         }
-        balance = getBalance(parent);
-        System.out.println("\n" + balance + " parent: " + parent.getData() + " nodeDel: " + nodeDel.getData());
+        balanceFactor = getBalance(parent);
+        System.out.println("\nthe starting balanceFactor: " + balanceFactor + " parent: "
+                + parent.getData() + " nodeDel: " + nodeDel.getData());
 
-        if (nodeDel == null) {
-            return nodeDel;
+//        if (nodeDel == null) {
+//            return nodeDel;
 //        delete a leaf node
-        } else if (nodeDel.getLeftChild() == null && nodeDel.getRightChild() == null) {
+//        } else
+        if (nodeDel.getLeftChild() == null && nodeDel.getRightChild() == null) {
             if (nodeDel == root) {
                 root = null;
             } else {
@@ -164,33 +182,30 @@ class AVL {
         }
         //            deleting a node with degree of two
         else {
-            Node toBeDeleted = nodeDel;
-            if (isLeftChild) {
-                while (nodeDel.getRightChild() != null) {
-                    nodeDel = nodeDel.getRightChild();
-                }
-            } else {
-                while (nodeDel.getLeftChild() != null) {
-                    nodeDel = nodeDel.getLeftChild();
-                }
-            }
-            toBeDeleted.setData(nodeDel.getData());
-            parent = nodeDel.getParent();
-            delete(nodeDel.getData());
+            Integer minimumData = minimumData(nodeDel.getRightChild());
+            System.out.println("deleeeeeeee" + nodeDel.getData());
+            delete(minimumData);
+            System.out.println("deleeeeeeee" + nodeDel.getData());
+            nodeDel.setData(minimumData);
         }
+        System.out.println("parent height at first: " + parent.getHeight());
         parent.setHeight(maximum(height(parent.getLeftChild()), height(parent.getRightChild())));
-        balance = getBalance(parent);
-        System.out.println("\nnew balance: " + balance + " and parent is " + parent.getData());
-//        inOrder(parent);
-        if (balance <= 1 && balance >= -1 && parent != root) {
-            do {
-                parent = parent.getParent();
-                balance = getBalance(parent);
-            } while ((balance <= 1 && balance >= -1) || parent != null);
+        balanceFactor = getBalance(parent);
+        System.out.println("\nnew balanceFactor: " + balanceFactor + " and parent is " + parent.getData());
+        inOrder(parent);
+        if (balanceFactor <= 1 && balanceFactor >= -1 && parent != root) {
+            for (int i = parents.size() - 1; i >= 0; i--) {
+                parent = parents.get(i);
+                balanceFactor = getBalance(parent);
+                if (balanceFactor > 1 || balanceFactor < -1)
+                    break;
+            }
         }
-        System.out.println("\nafter rebalanced:" + balance);
-//        inOrder(parent);
-        return rotateCase(parent, parent.getData(), balance);
+        rotateCase(parent, data, balanceFactor);
+        System.out.println();
+        inOrder(parent);
+        balanceFactor = getBalance(parent);
+        System.out.println("\nafter rebalanced:" + balanceFactor);
     }
 
     void preOrder(Node node) {
@@ -217,6 +232,15 @@ class AVL {
         }
     }
 
+    private Integer minimumData(Node root) {
+        Integer min = root.getData();
+        while (root.getLeftChild() != null) {
+            min = root.getLeftChild().getData();
+            root = root.getLeftChild();
+        }
+        return min;
+    }
+
     @Override
     public String toString() {
         final int height = 5, width = 64;
@@ -224,20 +248,20 @@ class AVL {
         StringBuilder sb = new StringBuilder(len);
         for (int i = 1; i <= len; i++)
             sb.append(i < len - 2 && i % width == 0 ? "\n" : ' ');
-        displayR(sb, width / 2, 1, width / 4, width, root, " ");
+        display(sb, width / 2, 1, width / 4, width, root, " ");
         return sb.toString();
     }
 
-    private void displayR(StringBuilder sb, int c, int r, int d, int w, Node n, String edge) {
+    private void display(StringBuilder sb, int c, int r, int d, int w, Node n, String edge) {
         if (n != null) {
-            displayR(sb, c - d, r + 2, d / 2, w, n.getLeftChild(), " /");
+            display(sb, c - d, r + 2, d / 2, w, n.getLeftChild(), " /");
             String s = String.valueOf(n.getData());
             int idx1 = r * w + c - (s.length() + 1) / 2;
             int idx2 = idx1 + s.length();
             int idx3 = idx1 - w;
             if (idx2 < sb.length())
                 sb.replace(idx1, idx2, s).replace(idx3, idx3 + 2, edge);
-            displayR(sb, c + d, r + 2, d / 2, w, n.getRightChild(), "\\ ");
+            display(sb, c + d, r + 2, d / 2, w, n.getRightChild(), "\\ ");
         }
     }
 }

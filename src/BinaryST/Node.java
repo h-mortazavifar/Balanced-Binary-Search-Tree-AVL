@@ -3,7 +3,6 @@ package BinaryST;
 class Node {
     private Integer data;
     private Integer height;
-    private Node parent;
     private Node leftChild;
     private Node rightChild;
 
@@ -36,8 +35,6 @@ class Node {
     }
 
     void setLeftChild(Node leftChild) {
-        if (leftChild != null)
-            leftChild.parent = this;
         this.leftChild = leftChild;
     }
 
@@ -46,8 +43,6 @@ class Node {
     }
 
     void setRightChild(Node rightChild) {
-        if (rightChild != null)
-            rightChild.parent = this;
         this.rightChild = rightChild;
     }
 
@@ -59,8 +54,19 @@ class Node {
         this.height = height;
     }
 
-    public Node getParent() {
-        return parent;
+
+    Integer smallest() {
+        if (this.leftChild == null) {
+            return this.data;
+        }
+        return this.leftChild.smallest();
+    }
+
+    Integer largest() {
+        if (this.rightChild == null) {
+            return this.data;
+        }
+        return this.rightChild.largest();
     }
 
 }
