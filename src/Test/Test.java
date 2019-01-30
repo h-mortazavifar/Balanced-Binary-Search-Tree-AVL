@@ -1,4 +1,6 @@
-package BinaryST;
+package Test;
+
+import BinaryST.AVL;
 
 public class Test {
 

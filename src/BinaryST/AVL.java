@@ -2,17 +2,26 @@ package BinaryST;
 
 import java.util.ArrayList;
 
-class AVL {
+/**
+ * class to insert and remove a node using a Binary Search Tree and balance it afterwards
+ */
+public class AVL {
     private Node root;
 
     private Integer height(Node node) {
         return node == null ? 0 : node.getHeight();
     }
 
+    /**
+     * Getting the maximum value between two nodes data
+     */
     private Integer maximum(Integer dataA, Integer dataB) {
         return dataA > dataB ? dataA : dataB;
     }
 
+    /**
+     * Getting the Node with largest data
+     */
     public Integer largest() {
         if (root != null) {
             return root.largest();
@@ -20,6 +29,9 @@ class AVL {
         return null;
     }
 
+    /**
+     * Getting the Node with smallest data
+     */
     public Integer smallest() {
         if (root != null) {
             return root.smallest();
@@ -27,15 +39,22 @@ class AVL {
         return null;
     }
 
-    Node getRoot() {
+    /**
+     * getting the root of tree
+     */
+    public Node getRoot() {
         return root;
     }
 
-    void setRoot(Node root) {
+    /**
+     * setting the root of tree
+     */
+    public void setRoot(Node root) {
         this.root = root;
     }
 
     /**
+     * gets a node and returns the rotated node
      * -----------a                            b
      * ---------/ \                         /   \
      * -------b   n4      RR Rotate       c      a
@@ -54,6 +73,7 @@ class AVL {
     }
 
     /**
+     * gets a node and returns the rotated node
      * ----a                                b
      * --/  \                             /  \
      * n1    b          LL Rotate      a      c
@@ -71,11 +91,17 @@ class AVL {
         return b;
     }
 
+    /**
+     * Sets the height of two nodes + 1 based on right and left child of them after inserting a node as their child
+     */
     private void setHeights(Node a, Node b) {
         a.setHeight(maximum(height(a.getLeftChild()), height(a.getRightChild())) + 1);
         b.setHeight(maximum(height(b.getLeftChild()), height(b.getRightChild())) + 1);
     }
 
+    /**
+     * after insert or delete rotates the given node based on the new given balance
+     */
     private Node rotateCase(Node node, Integer data, Integer balance) {
         if (balance > 1 && data < node.getLeftChild().getData())
             return rightRotate(node);
@@ -98,6 +124,9 @@ class AVL {
         return node;
     }
 
+    /**
+     * getting the balance of the node based on the right and left child
+     */
     private Integer getBalance(Node node) {
         if (node == null) {
             return 0;
@@ -105,7 +134,12 @@ class AVL {
         return height(node.getLeftChild()) - height(node.getRightChild());
     }
 
-    Node insert(Node node, Integer data) {
+    /**
+     * inserts a data with getting a root to decide where to insert the data and rotates the tree if it got unbalanced
+     *
+     * @param node is the root
+     */
+    public Node insert(Node node, Integer data) {
         if (node == null) {
             return new Node(data);
         } else if (data > node.getData()) {
@@ -124,7 +158,10 @@ class AVL {
         return rotateCase(node, data, balance);
     }
 
-    void delete(Integer data) {
+    /**
+     * deletes the given data from the tree and rotates it in case of unbalanced
+     */
+    public void delete(Integer data) {
         ArrayList<Node> parents = new ArrayList<>();
         Node nodeDel = this.root;
         Node parent = this.root;
@@ -201,30 +238,48 @@ class AVL {
         }
     }
 
-    void preOrder(Node node) {
-        if (node != null) {
-            System.out.print(node.getData() + " ");
-            preOrder(node.getLeftChild());
-            preOrder(node.getRightChild());
+    /**
+     * prints data of the nodes of the tree based on pre-order method
+     *
+     * @param root is the root of the tree
+     */
+    public void preOrder(Node root) {
+        if (root != null) {
+            System.out.print(root.getData() + " ");
+            preOrder(root.getLeftChild());
+            preOrder(root.getRightChild());
         }
     }
 
-    void inOrder(Node node) {
-        if (node != null) {
-            inOrder(node.getLeftChild());
-            System.out.print(node.getData() + " ");
-            inOrder(node.getRightChild());
+    /**
+     * prints data of the nodes of the tree based on in-order method
+     *
+     * @param root is the root of the tree
+     */
+    public void inOrder(Node root) {
+        if (root != null) {
+            inOrder(root.getLeftChild());
+            System.out.print(root.getData() + " ");
+            inOrder(root.getRightChild());
         }
     }
 
-    void postOrder(Node node) {
-        if (node != null) {
-            postOrder(node.getLeftChild());
-            postOrder(node.getRightChild());
-            System.out.print(node.getData() + " ");
+    /**
+     * prints data of the nodes of the tree based on post-order method
+     *
+     * @param root is the root of the tree
+     */
+    public void postOrder(Node root) {
+        if (root != null) {
+            postOrder(root.getLeftChild());
+            postOrder(root.getRightChild());
+            System.out.print(root.getData() + " ");
         }
     }
 
+    /**
+     * returns the minimum data to replace the deleted node
+     */
     private Integer minimumData(Node root) {
         Integer min = root.getData();
         while (root.getLeftChild() != null) {
@@ -234,6 +289,9 @@ class AVL {
         return min;
     }
 
+    /**
+     * prints the tree
+     */
     @Override
     public String toString() {
         final int height = 5, width = 64;
