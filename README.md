@@ -1,4 +1,4 @@
-#AVL Tree
+# AVL Tree
 
 AVL tree class that inserts and removes a node using a Binary Search Tree and balance it afterwards
                                                               
